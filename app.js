@@ -5,11 +5,14 @@ const addCartBtn = document.querySelector('.addCart');
 const mousesDOM = document.querySelector('.mouse-products');
 const keyboardsDOM = document.querySelector('.keyboard-products');
 const modalesDOM = document.querySelector('.modal');
-const buyCartBtn = document.getElementsByClassName('.buyCart');
-const cartTotal = document.getElementsByClassName('priceResult');
-const cartRemove = document.getElementsByClassName('remove-item');
-const cartContent = document.getElementsByClassName('carrito__productos');
-const cartProduct = document.getElementsByClassName('producto-carrito');
+const buyCartBtn = document.querySelector('.buyCart');
+const closeCartBtn = document.querySelector('.cerrar-carrito');
+const cartTotal = document.querySelector('.priceResult');
+const cartRemove = document.querySelector('.remove-item');
+const cartContent = document.querySelector('.carrito__productos');
+const cartProduct = document.querySelector('.producto-carrito');
+const cartOverlay = document.querySelector('.cart-overlay');
+const cartDOM = document.querySelector('.carrito');
 //cart
 let cart = [];
 //buttons
