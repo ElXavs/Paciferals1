@@ -1,10 +1,7 @@
 //variables//
-
 const cartBtn = document.querySelector('.carrito-logo');
-const addCartBtn = document.querySelector('.addCart');
 const mousesDOM = document.querySelector('.mouse-products');
 const keyboardsDOM = document.querySelector('.keyboard-products');
-const modalesDOM = document.querySelector('.modal');
 const buyCartBtn = document.querySelector('.buyCart');
 const closeCartBtn = document.querySelector('.cerrar-carrito');
 const cartTotal = document.querySelector('.priceResult');
@@ -17,18 +14,25 @@ const cartDOM = document.querySelector('.carrito');
 let cart = [];
 //buttons
 let buttonsDOM = [];
+let productsDOM = [];
+
+//variables modal
+const modalDOM = document.querySelector('.modal');
+const closeModal = document.querySelector('.cerrar-modal');
+let modalesDOM = [];
+
+
 //getting the products
 class Products {
   async getProducts() {
     try {
       let result = await fetch("products.json");
       let data = await result.json();
-
       let products = data.items;
       products = products.map(item => {
         const {type,brand,title,price,image} = item.fields;
         const {id} = item.sys;
-        return {type,brand,title,price,id,image}
+        return {type,brand,title,price,id,image};
       })
       return products;
     } catch (error) {
@@ -44,55 +48,28 @@ class UI {
     products.forEach(product => {
       if (product.type == "mouse"){
         resultm += `
-        <!-- single product start -->
         <div class="caja--productos caja-${product.id}" data-id=${product.id}>
           <div class="caja__imagen"><img class="product-img" src=${product.image} /></div>
           <div class="caja--productos__contenido">
             <h3>${product.title}</h3>
           </div>
         </div>
-        <!-- single product end -->
         `;
         mousesDOM.innerHTML = resultm;
       } else {
         resultk += `
-        <!-- single product start -->
         <div class="caja--productos caja-${product.id}" data-id=${product.id}>
           <div class="caja__imagen"><img src=${product.image} /></div>
           <div class="caja--productos__contenido">
             <h3>${product.title}</h3>
           </div>
         </div>
-        <!-- single product end -->
         `;
         keyboardsDOM.innerHTML = resultk;
       }
     });
   }
-  displayModales(products) {
-    let result = '';
-    products.forEach(product => {
-      result += `
-      <div class="modal__producto modal-${product.id} modald-${product.id}" id="modal-${product.id}">
-        <div class="modal__producto-imagen"><img src=${product.image}/></div>
-          <div class="modal__producto-contenido">
-            <div class="modal__producto-contenido-titulo">
-              <h2>${product.brand}</h2>
-              <h2 class="titulo">${product.title}</h2>
-            </div>
-            <div class="modal__producto-contenido-precio">
-              <h3>Price:</h3>
-              <p>$ ${product.price} MXN</p>
-            </div>
-            <div class="modal__producto-contenido-button">
-              <button class="addCart" data-id=${product.id}>Add to Cart</button>
-            </div>
-          </div>
-      </div>
-      `;
-    });
-    modalesDOM.innerHTML = result;
-  }
+  //cart
   getCartButtons() {
     const buttons = [...document.querySelectorAll(".addCart")];
     buttonsDOM = buttons;
@@ -123,7 +100,7 @@ class UI {
     let tempTotal = 0;
     cart.map(item => {
       tempTotal += item.price * item.amount;
-    })
+    });
     cartTotal.innerText = `$ ${tempTotal} MXN`;
   }
   addCartItem(item) {
@@ -137,16 +114,142 @@ class UI {
           <p class="producto-precio">$ ${item.price} MXN</p>
           <span class="remove-item" data-id=${item.id}>remove</span>
         </div>
-        <div class="producto-cantidad">
-          <h3>Quantity</h3>
-          <div><i class="fas fa-chevron-up" data-id=${item.id}></i>
+      <div class="producto-cantidad">
+        <h3>Quantity</h3>
+        <div>
+          <i class="fas fa-chevron-up" data-id=${item.id}></i>
           <p class="item-amount">${item.amount}</p>
           <i class="fas fa-chevron-down" data-id=${item.id}></i>
         </div>
       </div>
     `;
     cartContent.appendChild(div);
-    console.log(cartContent);
+  }
+  showCart() {
+    cartOverlay.classList.add('fondoTransparente');
+    cartDOM.classList.add('showCart');
+  }
+  hideCart() {
+    cartOverlay.classList.remove('fondoTransparente');
+    cartDOM.classList.remove('showCart');
+  }
+  setupAPP() {
+    cart = Storage.getCart();
+    this.setCartValues(cart);
+    this.populateCart(cart);
+    cartBtn.addEventListener('click', this.showCart);
+    closeCartBtn.addEventListener('click', this.hideCart);
+  }
+  populateCart(cart) {
+    cart.forEach(item => this.addCartItem(item));
+  }
+  cartLogic() {
+    // buy
+    buyCartBtn.addEventListener('click', () => {
+      this.buyCart();
+    });
+    // functionality of the cart
+    cartContent.addEventListener('click', event => {
+      if(event.target.classList.contains('remove-item')) {
+        let removeItem = event.target;
+        let id = removeItem.dataset.id;
+        cartContent.removeChild(removeItem.parentElement.parentElement);
+        this.removeItem(id);
+      }
+      else if(event.target.classList.contains('fa-chevron-up')) {
+        let addAmount = event.target;
+        let id = addAmount.dataset.id;
+        let tempItem = cart.find(item => item.id === id);
+        tempItem.amount += 1;
+        Storage.saveCart(cart);
+        this.setCartValues(cart);
+        addAmount.nextElementSibling.innerText = tempItem.amount;
+      }
+      else if(event.target.classList.contains('fa-chevron-down')) {
+        let lessAmount = event.target;
+        let id = lessAmount.dataset.id;
+        let tempItem = cart.find(item => item.id === id);
+        tempItem.amount -= 1;
+        if(tempItem.amount > 0) {
+          Storage.saveCart(cart);
+          this.setCartValues(cart);
+          lessAmount.previousElementSibling.innerText = tempItem.amount;
+          console.log(lessAmount.parentElement.parentElement.parentElement);
+        } else {
+          cartContent.removeChild(lessAmount.parentElement.parentElement.parentElement);
+          this.removeItem(id);
+        }
+      }
+    })
+  }
+  buyCart() {
+    let cartItems = cart.map(item => item.id);
+    cartItems.forEach(id => this.removeItem(id));
+    while(cartContent.children.length > 0) {
+      cartContent.removeChild(cartContent.children[0]);
+    }
+    this.hideCart();
+  }
+  removeItem(id) {
+    cart = cart.filter(item => item.id !==id);
+    this.setCartValues(cart);
+    Storage.saveCart(cart);
+    let button = this.getSingleButton(id);
+    button.disabled = false;
+    button.innerText = "Add to Cart";
+  }
+  getSingleButton(id) {
+    return buttonsDOM.find(button => button.dataset.id === id);
+  }
+  //modales
+  displayModales(products) {
+    let result = '';
+    products.forEach(product => {
+      result += `
+      <div class="modal__producto modal-${product.id}" data-id="${product.id}">
+        <span class="cerrar-modal">
+          <i class="fas fa-window-close"></i>
+        </span>
+        <div class="modal__producto-imagen"><img src=${product.image}/></div>
+          <div class="modal__producto-contenido">
+            <div class="modal__producto-contenido-titulo">
+              <h2>${product.brand}</h2>
+              <h2 class="titulo">${product.title}</h2>
+            </div>
+            <div class="modal__producto-contenido-precio">
+              <h3>Price:</h3>
+              <p>$ ${product.price} MXN</p>
+            </div>
+            <div class="modal__producto-contenido-button">
+              <button class="addCart" data-id=${product.id}>Add to Cart</button>
+            </div>
+          </div>
+      </div>
+      `;
+    });
+    modalDOM.innerHTML = result;
+  }
+
+  getProductButtons() {
+    const productButtons = [...document.querySelectorAll(".caja--productos")];
+    const modales = [...document.querySelectorAll(".modal__producto")];
+    productButtons.forEach(product => {
+      product.addEventListener('click', () => {
+        modalDOM.classList.add('fondoTransparente');
+        let tempModal;
+        tempModal = modales.find(modal => modal.dataset.id === product.dataset.id);
+        tempModal.classList.add('showModal');
+      })
+    })
+    const closeModalBtns = [...document.querySelectorAll('.cerrar-modal')];
+    closeModalBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        modalDOM.classList.remove('fondoTransparente');
+        modales.forEach(modal => {
+          modal.classList.remove('showModal');
+        })
+      })
+    })
   }
 }
 //local storage
@@ -161,11 +264,16 @@ class Storage {
   static saveCart(cart) {
     localStorage.setItem('cart',JSON.stringify(cart));
   }
+  static getCart(){
+    return localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : [];
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   const ui = new UI();
   const products = new Products();
+  //setup app
+  ui.setupAPP();
   //get all products
   products.getProducts().then(products => {
     ui.displayProducts(products);
@@ -173,29 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
     Storage.saveProducts(products);
   }).then(() => {
     ui.getCartButtons();
+    ui.getProductButtons();
+    ui.cartLogic();
   });
 });
-
-// cajaZowie1.addEventListener('click', () => {
-//   modalZowie1.classList.remove('modald-1');
-// });
-
-//variables de pagina principal
-const cajaZowie1 = document.querySelector('caja-1');
-const cajaZowie2 = document.querySelector('caja-2');
-const cajaGlorious1 = document.querySelector('caja-3');
-const cajaGlorious2 = document.querySelector('caja-4');
-const cajaDucky1 = document.querySelector('caja-5');
-const cajaDucky2 = document.querySelector('caja-6');
-const cajaHk1 = document.querySelector('caja-7');
-const cajaHk2 = document.querySelector('caja-8');
-
-//variables modal
-const modalZowie1 = document.querySelector('modal-1');
-const modalZowie2 = document.querySelector('modal-2');
-const modalGlorious1 = document.querySelector('modal-3');
-const modalGlorious2 = document.querySelector('modal-4');
-const modalDucky1 = document.querySelector('modal-5');
-const modalDucky2 = document.querySelector('modal-6');
-const modalHk1 = document.querySelector('modal-7');
-const modalHk2 = document.querySelector('modal-8');

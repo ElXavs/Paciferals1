@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&amp;family=Lobster&amp;family=Oswald:wght@400;500;600;700&amp;display=swap"><script src="https://kit.fontawesome.com/ce08c68594.js" crossorigin="anonymous"></script>
+  </head>
+</html>
+<body>
+  <div class="allContent">
+    <header class="header">
+      <div class="header-left"><a class="logoprincipal" href="">
+          <h1>Paciferals</h1></a></div>
+      <div class="header-right">
+        <span class="carrito-logo">
+          <i class="fas fa-shopping-cart"></i>
+        </span>
+      </div>
+    </header>
+    <section class="intro">
+      <div class="intro__titulo">
+        <h1>For people like you</h1>
+      </div>
+      <div class="intro__categorias"><a class="intro__categorias--mouse" href="#mouses">
+          <h1>The best mice</h1>
+          <p>See products</p></a><a class="intro__categorias--teclado" href="#teclados">
+          <h1>The best keyboards</h1>
+          <p>See products</p></a></div>
+    </section>
+    <section class="marca">
+      <div class="marca__container"><img class="ducky" src="https://www.duckychannel.com.tw/assets/img/logo.png" alt=""><img class="glorious" src="https://cdn.shopify.com/s/files/1/0549/2681/files/GPC_InversedLogo_Rev_SMALL_CROP.png?v=1579809708" alt=""><img class="hkgaming" src="https://cdn.shopify.com/s/files/1/0283/3583/3187/files/HK_Gaming-png_51de5a2c-c3f5-449e-b3f1-405273a01823_220x.png?v=1571746544" alt=""><img class="zowie" src="https://logodix.com/logo/26792.png" alt=""></div>
+    </section>
+    <div id="mouses"></div>
+    <div class="mouse__title">
+      <h2>Amazing Mice</h2>
+    </div>
+    <section class="mouse">
+      <div class="mouse__brand--zowie">
+        <h2>Zowie</h2>
+      </div>
+      <div class="mouse__brand--glorious">
+        <h2>Glorious</h2>
+      </div>
+      <div class="mouse-products"></div>
+    </section>
+    <div id="teclados"></div>
+    <div class="teclado__title">
+      <h2>Amazing Keyboards</h2>
+    </div>
+    <section class="teclado">
+      <div class="teclado__brand--ducky">
+        <h2>Ducky</h2>
+      </div>
+      <div class="teclado__brand--hk">
+        <h2>HK Gaming</h2>
+      </div>
+      <div class="keyboard-products"></div>
+    </section>
+    <footer class="footer">
+      <div class="footer--left">
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Conditions</a></li>
+          <li><a href="#">Privacy Terms</a></li>
+        </ul>
+      </div>
+      <div class="footer--center">
+        <p>Xavier Garcia © All rights reserved.</p>
+      </div>
+      <div class="footer--right">
+        <div class="follow">
+          <h3>Follow us</h3>
+        </div>
+        <div class="social"><a class="social-link twitter" href="https://twitter.com/elxavs_mx"><i class="fab fa-twitter"></i></a><a class="social-link github" href="https://github.com/ElXavs"><i class="fab fa-github"></i></a><a class="social-link instagram" href="https://www.instagram.com/elxavs.mx"><i class="fab fa-instagram"></i></a></div>
+      </div>
+    </footer>
+  </div>
+  <div class="cart-overlay">
+    <div class="carrito">
+      <span class="cerrar-carrito">
+        <i class="fas fa-window-close"></i>
+      </span>
+      <div class="carrito__title">
+        <h1>Carrito de compras</h1>
+      </div>
+      <div class="carrito__productos"></div>
+      <div class="carrito__total">
+        <div class="carrito__total--caja-precio">
+          <h2>Your total:</h2>
+          <h3 class="priceResult"></h3>
+        </div>
+        <div class="carrito__total--caja-compra">
+          <button class="buyCart">Buy</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="miModal"></div>
+  <script src="app.js"></script>
+</body>
